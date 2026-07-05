@@ -1,10 +1,10 @@
 {
-  "time": "2026-07-06 00:35:59 +0800",
+  "time": "2026-07-06 00:45:01 +0800",
   "hostname": "orangepi5pro",
   "cpu_temp_c": 43.5,
-  "memory_used_percent": 12.6,
+  "memory_used_percent": 13.2,
   "disk_used_percent": 28,
-  "network": "offline",
-  "ip_address": "",
-  "uptime_seconds": 8258
+  "network": "online",
+  "ip_address": "192.168.1.19",
+  "uptime_seconds": 8800
 }
