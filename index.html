@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <title>开发板状态</title>
+  </head>
+  <body>
+    <h1>我的开发板状态页面</h1>
+    <pre id="status">加载中...</pre>
+
+    <script>
+      fetch('/status.json')
+        .then(r => r.json())
+        .then(d => {
+          document.querySelector('#status').textContent =
+            JSON.stringify(d, null, 2)
+        })
+    </script>
+  </body>
+</html>
