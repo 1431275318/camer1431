@@ -1,12 +1,12 @@
 {
-  "time": "2026-07-06 04:12:01 +0800",
+  "time": "2026-07-06 04:13:01 +0800",
   "hostname": "orangepi5pro",
   "cpu_temp_c": 48.1,
-  "memory_used_percent": 14.7,
+  "memory_used_percent": 14.6,
   "disk_used_percent": 28,
-  "network": "online",
+  "network": "offline",
   "ip_address": "192.168.1.19",
-  "uptime_seconds": 21219,
+  "uptime_seconds": 21280,
   "camera_status": "capture_failed",
   "camera_image": "/camera.jpg"
 }
