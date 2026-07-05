@@ -9,12 +9,20 @@
     <pre id="status">加载中...</pre>
 
     <script>
-      fetch('/status.json')
-        .then(r => r.json())
-        .then(d => {
-          document.querySelector('#status').textContent =
-            JSON.stringify(d, null, 2)
-        })
+      function loadStatus() {
+        fetch('/status.json', { cache: 'no-store' })
+          .then(r => r.json())
+          .then(d => {
+            document.querySelector('#status').textContent =
+              JSON.stringify(d, null, 2)
+          })
+          .catch(() => {
+            document.querySelector('#status').textContent = '读取 status.json 失败'
+          })
+      }
+
+      loadStatus()
+      setInterval(loadStatus, 10000)
     </script>
   </body>
 </html>
