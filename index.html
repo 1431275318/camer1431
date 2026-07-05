@@ -182,6 +182,59 @@
         min-width: 122px;
       }
 
+      .camera {
+        margin-top: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        overflow: hidden;
+      }
+
+      .camera-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .camera-title {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 750;
+      }
+
+      .camera-status {
+        color: var(--muted);
+        font-size: 13px;
+        white-space: nowrap;
+      }
+
+      .camera-frame {
+        position: relative;
+        aspect-ratio: 16 / 9;
+        background: #101820;
+      }
+
+      .camera-frame img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+      }
+
+      .camera-empty {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        padding: 18px;
+        color: rgba(255, 255, 255, 0.72);
+        text-align: center;
+        font-size: 14px;
+      }
+
       .section-title {
         margin: 22px 0 10px;
         font-size: 14px;
@@ -374,6 +427,17 @@
         </div>
       </section>
 
+      <section class="camera">
+        <div class="camera-head">
+          <h2 class="camera-title">实时画面</h2>
+          <span class="camera-status" id="camera-status">等待图像</span>
+        </div>
+        <div class="camera-frame">
+          <img id="camera-image" alt="开发板摄像头画面" hidden>
+          <div class="camera-empty" id="camera-empty">摄像头图片还没有上传</div>
+        </div>
+      </section>
+
       <h2 class="section-title">系统指标</h2>
       <section class="metrics" aria-live="polite">
         <article class="metric">
@@ -500,6 +564,27 @@
         }
       }
 
+      const setCamera = (status) => {
+        const image = document.getElementById('camera-image')
+        const empty = document.getElementById('camera-empty')
+        const cameraStatus = status.camera_status || 'unknown'
+
+        text('camera-status', cameraStatus === 'ok' ? '已更新' : cameraStatus)
+
+        if (cameraStatus === 'ok' && status.camera_image) {
+          image.src = `${status.camera_image}?t=${Date.now()}`
+          image.hidden = false
+          empty.hidden = true
+        } else {
+          image.hidden = true
+          empty.hidden = false
+          empty.textContent =
+            cameraStatus === 'camera_missing'
+              ? '没有检测到摄像头设备'
+              : `摄像头状态：${cameraStatus}`
+        }
+      }
+
       function render(status) {
         text('hostname', status.hostname || '未知设备')
         text('cpu-temp', formatNumber(status.cpu_temp_c))
@@ -514,6 +599,7 @@
         setBar('memory-bar', status.memory_used_percent)
         setBar('disk-bar', status.disk_used_percent)
         setNetwork(status.network)
+        setCamera(status)
       }
 
       function loadStatus() {
