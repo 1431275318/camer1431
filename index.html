@@ -520,6 +520,11 @@
 
     <script>
       const refreshMs = 10000
+      const repoOwner = '1431275318'
+      const repoName = 'camer1431'
+      const repoBranch = 'main'
+      const githubApiBase = `https://api.github.com/repos/${repoOwner}/${repoName}`
+      const rawBase = `https://raw.githubusercontent.com/${repoOwner}/${repoName}`
 
       const text = (id, value) => {
         document.getElementById(id).textContent = value
@@ -577,7 +582,10 @@
         text('camera-status', cameraStatus === 'ok' ? '已更新' : cameraStatus)
 
         if (cameraStatus === 'ok' && status.camera_image) {
-          image.src = `${status.camera_image}?t=${Date.now()}`
+          const imagePath = status.camera_image.replace(/^\//, '')
+          image.src = status.raw_revision
+            ? `${rawBase}/${status.raw_revision}/${imagePath}`
+            : `${status.camera_image}?t=${Date.now()}`
           image.hidden = false
           empty.hidden = true
         } else {
@@ -607,17 +615,25 @@
         setCamera(status)
       }
 
-      function loadStatus() {
-        fetch(`/status.json?t=${Date.now()}`, { cache: 'no-store' })
-          .then((response) => {
-            if (!response.ok) throw new Error('status.json not found')
-            return response.json()
+      async function loadStatus() {
+        try {
+          const commitResponse = await fetch(`${githubApiBase}/commits/${repoBranch}?t=${Date.now()}`, {
+            cache: 'no-store',
           })
-          .then(render)
-          .catch(() => {
-            text('message', '读取 status.json 失败，稍后会自动重试。')
-            setNetwork('unknown')
-          })
+          if (!commitResponse.ok) throw new Error('latest commit not found')
+
+          const commit = await commitResponse.json()
+          const revision = commit.sha
+          const statusResponse = await fetch(`${rawBase}/${revision}/status.json`, { cache: 'no-store' })
+          if (!statusResponse.ok) throw new Error('status.json not found')
+
+          const status = await statusResponse.json()
+          status.raw_revision = revision
+          render(status)
+        } catch {
+          text('message', '读取 status.json 失败，稍后会自动重试。')
+          setNetwork('unknown')
+        }
       }
 
       loadStatus()
